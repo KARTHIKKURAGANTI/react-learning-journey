@@ -2,39 +2,56 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import {Header,Input,Title,Subtitle} from './HeroSection'
-import { Button } from './Button'
-import { Card } from './Card'
+import { v4 as uuid } from 'uuid';
 
-
-
-
-let Name="AI Model Performance Dashboard";
-let SubName="Monitor accuracy, loss, and real-time predictions of your ML models.";
 function App() {
-  
-  const handleUpload = () => {
-    console.log("upload button handled successfully...");
+  const [todo,setTodo] = useState();
+  const [todoList,setTodoList] = useState([]);
+
+  const onTodoInputChange = (event) => {
+    setTodo(event.target.value);
   }
-  const handlePredict = () => {
-    console.log("predict button handled successfully...");
+
+  const onTodoAddClick = () => {
+    setTodoList([...todoList,{ id:uuid(), todo: todo,isCompleted: false}]);
   }
+  const onDeleteClcik = (id) => {
+    const updatedTodoList = todoList.filter(todo=>todo.id !== id);
+    setTodoList(newTodoList);
+  }
+  const ontodoCheckChange = (id) => {
+    const updatedTodoList = todoList.map(todo=>{
+      if(todo.id === id){
+        return {...todo, isCompleted: !todo.isCompleted}
+      }
+      return todo;
+    })
+    setTodoList(updatedTodoList);
+  }
+
 
   return (
-    <>
+    <div className="App">
+      <h1>My Wishlist</h1>
     <div>
-      <Header />   
-      <Title name={Name}/>
-      <Subtitle subname={SubName}/>
-      <Input/> <br></br>
-      <Button bname="upload" fun={handleUpload}/> <span> </span> <Button bname="predict" fun={handlePredict}/>
-      <Card title="Accuracy" value={`${98.34}%`} status="success"/>
-      <Card title="Loss" value={`${0.34}%`} status="success"/>
-      <Card title="Predictions" value={`${120}%`} status="success"/>
+      <input placeholder="Enter your wishlist item" onChange={onTodoInputChange}></input>
+      <button onClick={onTodoAddClick}>Add</button>
     </div>
-      
-    </>
-  );
+    <div>
+      {
+      todoList && todoList.length > 0 && todoList.map(todo=>(
+        <div key = {todo.id}>
+          <label>
+            <input onChange={()=>ontodoCheckChange(todo.id)} type="checkbox" />
+            <span className={todo.isCompleted?'strike-through':''}>{todo.todo}</span>
+          </label>
+          <button onClick={()=>(onDeleteClcik(todo.id))} >Delete</button>
+        </div>
+      ))
+      }
+    </div>
+    </div>
+  )
 }
 
 export default App
